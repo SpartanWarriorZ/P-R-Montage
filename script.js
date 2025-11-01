@@ -300,43 +300,65 @@ function lazyLoadImages() {
 // Initialize lazy loading
 document.addEventListener('DOMContentLoaded', lazyLoadImages);
 
-// Contact Form Handler
+// Contact Form Handler (Web3Forms)
 document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contact-form');
     
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const subject = document.getElementById('subject').value;
-            const message = document.getElementById('message').value;
-            
-            // Prepare email subject and body
-            const mailSubject = encodeURIComponent(subject);
-            const mailBody = encodeURIComponent(
-                `Name: ${name}\n` +
-                `E-Mail: ${email}\n` +
-                `Telefon: ${phone || 'Nicht angegeben'}\n\n` +
-                `Nachricht:\n${message}`
-            );
-            
-            // Open mailto link
-            const mailtoLink = `mailto:info@pundr-montage.de?subject=${mailSubject}&body=${mailBody}`;
-            window.location.href = mailtoLink;
-            
-            // Show success message
             const submitButton = contactForm.querySelector('button[type="submit"]');
             const originalText = submitButton.textContent;
-            submitButton.textContent = '✓ Nachricht vorbereitet!';
-            submitButton.style.background = 'var(--primary-blue)';
             
-            setTimeout(() => {
-                submitButton.textContent = originalText;
-                submitButton.style.background = '';
-            }, 3000);
+            // Add loading state
+            submitButton.disabled = true;
+            submitButton.textContent = 'Wird gesendet...';
+            submitButton.style.opacity = '0.7';
+            
+            try {
+                // Create FormData from the form
+                const formData = new FormData(contactForm);
+                
+                // Submit to Web3Forms
+                const response = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success message
+                    submitButton.textContent = '✓ Nachricht gesendet!';
+                    submitButton.style.background = '#10b981';
+                    
+                    // Reset form
+                    contactForm.reset();
+                    
+                    // Reset button after 5 seconds
+                    setTimeout(() => {
+                        submitButton.textContent = originalText;
+                        submitButton.style.background = '';
+                        submitButton.disabled = false;
+                        submitButton.style.opacity = '1';
+                    }, 5000);
+                } else {
+                    throw new Error('Fehler beim Senden');
+                }
+            } catch (error) {
+                // Show error message
+                submitButton.textContent = '✗ Fehler! Bitte erneut versuchen.';
+                submitButton.style.background = '#ef4444';
+                
+                // Reset button after 5 seconds
+                setTimeout(() => {
+                    submitButton.textContent = originalText;
+                    submitButton.style.background = '';
+                    submitButton.disabled = false;
+                    submitButton.style.opacity = '1';
+                }, 5000);
+            }
         });
     }
 });
