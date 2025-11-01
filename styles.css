@@ -149,11 +149,11 @@ body {
 
 .dropdown-menu {
     position: fixed;
-    top: 90px;
+    top: 93px;
     left: 0;
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(10px);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     border-radius: 0 0 16px 16px;
     padding: 0;
     min-width: 220px;
@@ -168,7 +168,7 @@ body {
     background-origin: border-box;
     background-clip: padding-box, border-box;
     transform-origin: top;
-    will-change: max-height, opacity, visibility;
+    will-change: max-height, opacity, visibility, box-shadow;
     z-index: 999;
 }
 
@@ -210,6 +210,7 @@ body {
     visibility: visible;
     max-height: 400px;
     padding: 0.75rem 0;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .dropdown:hover .dropdown-menu::before {
@@ -296,7 +297,7 @@ body {
 .hero {
     background: transparent;
     color: white;
-    padding: 120px 0 80px;
+    padding: 180px 0 80px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -996,12 +997,12 @@ body {
 .cta::after {
     content: '';
     position: absolute;
-    top: -15%;
+    top: -100%;
     left: 0;
     right: 0;
-    bottom: -15%;
+    bottom: -100%;
     background: url('Kabeltrassen.jpg') center/cover no-repeat;
-    background-size: 115% 115%;
+    background-size: 150% auto;
     z-index: -2;
     transform: translateY(var(--parallax-y, 0px));
     will-change: transform;
