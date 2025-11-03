@@ -274,45 +274,63 @@ const observerScale = new IntersectionObserver(function(entries) {
     });
 }, { threshold: 0.15, rootMargin: '0px 0px -80px 0px' });
 
-// Desktop service cards observer with enhanced animation
-const desktopServiceObserver = new IntersectionObserver(function(entries) {
+// Service cards observer for staggered animation
+let serviceCardsAnimated = false;
+const servicesSectionObserver = new IntersectionObserver(function(entries) {
     entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0) scale(1) rotateY(0deg)';
-            entry.target.classList.add('animated');
-            desktopServiceObserver.unobserve(entry.target);
+        if (entry.isIntersecting && !serviceCardsAnimated) {
+            serviceCardsAnimated = true;
+            const serviceCards = entry.target.querySelectorAll('.service-card');
+            const isDesktop = window.innerWidth > 768;
+            
+            // Animate each card with staggered delay
+            serviceCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    if (isDesktop) {
+                        card.style.transform = 'translateY(0) scale(1) rotateY(0deg)';
+                    } else {
+                        card.style.transform = 'translateY(0) scale(1)';
+                    }
+                }, index * (isDesktop ? 150 : 100)); // Stagger delay: 150ms desktop, 100ms mobile
+            });
+            
+            servicesSectionObserver.unobserve(entry.target);
         }
     });
-}, { threshold: 0.2, rootMargin: '0px 0px -100px 0px' });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
 // Observe elements for animation
 document.addEventListener('DOMContentLoaded', function() {
-    // Service cards - enhanced fade up with scale for desktop
+    // Service cards - staggered fade up animation
+    const servicesSection = document.querySelector('.services');
     const serviceCards = document.querySelectorAll('.service-card');
     const isDesktop = window.innerWidth > 768;
     
-    serviceCards.forEach((el, index) => {
+    // Initialize service cards as hidden
+    serviceCards.forEach((el) => {
         el.style.opacity = '0';
+        el.style.transition = isDesktop 
+            ? 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
+            : 'opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
         
         if (isDesktop) {
-            // Desktop: Elegant fade up with scale and slight 3D rotation
-            el.style.transform = 'translateY(60px) scale(0.9) rotateY(-5deg)';
-            el.style.transition = 'opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
-            el.style.transitionDelay = `${index * 0.15}s`;
-            // willChange nur während Animation, nicht dauerhaft
+            // Desktop: Start from below with scale and slight rotation
+            el.style.transform = 'translateY(50px) scale(0.95) rotateY(-3deg)';
             el.style.perspective = '1000px';
-            
-            desktopServiceObserver.observe(el);
         } else {
-            // Mobile: Simpler animation
+            // Mobile: Start from below with scale
             el.style.transform = 'translateY(40px) scale(0.95)';
-            el.style.transition = 'opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-            el.style.transitionDelay = `${index * 0.1}s`;
-            observer.observe(el);
         }
-        
-        // Add click handler to service card
+    });
+    
+    // Observe services section to trigger animation
+    if (servicesSection) {
+        servicesSectionObserver.observe(servicesSection);
+    }
+    
+    // Add click handlers to service cards
+    serviceCards.forEach((el) => {
         const serviceTitle = el.querySelector('.service-title');
         if (serviceTitle) {
             const titleText = serviceTitle.textContent.toLowerCase();
@@ -570,8 +588,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if (shouldScroll && lenis) {
             const gallerySection = document.querySelector('.references-gallery');
             if (gallerySection) {
-                const offsetTop = gallerySection.offsetTop - document.querySelector('.header').offsetHeight;
-                lenis.scrollTo(offsetTop, {
+                const headerHeight = document.querySelector('.header').offsetHeight;
+                const sectionTop = gallerySection.offsetTop;
+                const sectionHeight = gallerySection.offsetHeight;
+                const windowHeight = window.innerHeight;
+                
+                // Calculate position to center gallery in viewport
+                // Position should be: sectionTop + (sectionHeight/2) - (windowHeight/2) - headerHeight
+                const targetPosition = sectionTop + (sectionHeight / 2) - (windowHeight / 2) - headerHeight;
+                
+                lenis.scrollTo(targetPosition, {
                     duration: 1.2,
                     easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
                 });
