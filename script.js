@@ -4,18 +4,41 @@ let lenis;
 document.addEventListener('DOMContentLoaded', function() {
     // Detect browser to optimize performance
     const isEdgeOrOpera = /Edg|OPR/i.test(navigator.userAgent);
+    const isChrome = /Chrome/i.test(navigator.userAgent) && !/Edg/i.test(navigator.userAgent);
+    const isFirefox = /Firefox/i.test(navigator.userAgent);
     const isMobile = window.innerWidth <= 768;
     
     // Initialize Lenis with browser-specific optimizations
+    let duration, mouseMultiplier, touchMultiplier;
+    
+    if (isEdgeOrOpera) {
+        duration = 0.8;
+        mouseMultiplier = 1;
+        touchMultiplier = 1.5;
+    } else if (isChrome) {
+        // Optimize for Chrome performance
+        duration = 1.0; // Slightly faster for better performance
+        mouseMultiplier = 0.8; // Reduce mouse sensitivity for smoother scrolling
+        touchMultiplier = 1.5; // Reduce touch multiplier
+    } else if (isFirefox) {
+        duration = 1.2;
+        mouseMultiplier = 1;
+        touchMultiplier = 2;
+    } else {
+        duration = 1.2;
+        mouseMultiplier = 1;
+        touchMultiplier = 2;
+    }
+    
     lenis = new Lenis({
-        duration: isEdgeOrOpera ? 0.8 : 1.2, // Shorter duration for Edge/Opera
+        duration: duration,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         direction: 'vertical',
         gestureDirection: 'vertical',
         smooth: true,
-        mouseMultiplier: 1,
+        mouseMultiplier: mouseMultiplier,
         smoothTouch: false,
-        touchMultiplier: isEdgeOrOpera ? 1.5 : 2, // Reduced for Edge/Opera
+        touchMultiplier: touchMultiplier,
         infinite: false,
     });
 
@@ -45,15 +68,19 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastScrollY = 0;
     let lastHeaderState = false;
     
-    // Throttle function for scroll events
-    let scrollThrottle = false;
+    // Optimized throttle for Chrome - use timestamp-based throttling
+    let lastScrollTime = 0;
+    const scrollThrottleMs = isChrome ? 16 : 33; // ~60fps for Chrome, ~30fps for others
     
     // Lenis scroll event with optimized performance
     lenis.on('scroll', (e) => {
-        // Throttle scroll events for better performance
-        if (scrollThrottle) return;
-        scrollThrottle = true;
+        const now = performance.now();
         
+        // Throttle scroll events using timestamp for better performance in Chrome
+        if (now - lastScrollTime < scrollThrottleMs) return;
+        lastScrollTime = now;
+        
+        // Use requestAnimationFrame for smooth updates
         requestAnimationFrame(() => {
             const scrollY = e.scroll;
             
@@ -73,14 +100,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Parallax effect for hero background (only update when scrollY changes significantly)
-            if (hero && Math.abs(scrollY - lastScrollY) > 1) {
+            // More aggressive throttling for Chrome
+            const scrollThreshold = isChrome ? 2 : 1;
+            if (hero && Math.abs(scrollY - lastScrollY) > scrollThreshold) {
                 lastScrollY = scrollY;
-                const parallaxSpeed = 0.1;
+                const parallaxSpeed = isChrome ? 0.08 : 0.1; // Slightly slower for Chrome
                 const yPos = -(scrollY * parallaxSpeed);
                 hero.style.setProperty('--parallax-y', yPos + 'px');
             }
-            
-            scrollThrottle = false;
         });
     });
 });
@@ -841,6 +868,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Initialize gallery with first category on page load (without scroll)
+    // Ensure first button is active
+    categoryFilterButtons.forEach(btn => {
+        const btnCategory = btn.getAttribute('data-category');
+        if (btnCategory === 'kabeltragsysteme') {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
     loadGallery('kabeltragsysteme', false);
 });
 
