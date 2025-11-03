@@ -53,7 +53,7 @@ body {
     z-index: 1000;
     border-bottom: 2px solid transparent;
     background-image: linear-gradient(white, white),
-                      linear-gradient(90deg, var(--primary-red), var(--primary-blue));
+                      linear-gradient(90deg, var(--primary-blue), var(--primary-red));
     background-origin: border-box;
     background-clip: padding-box, border-box;
     transition: all 0.3s ease;
@@ -122,7 +122,7 @@ body {
     left: 50%;
     width: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
     transform: translateX(-50%);
     transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     border-radius: 2px;
@@ -150,20 +150,19 @@ body {
 
 .dropdown:hover > .nav-link::after {
     width: 100%;
-    background: linear-gradient(90deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
 }
 
 /* Contact Link Special Styling */
 .nav-link-contact {
     padding: 0.5rem 1.5rem !important;
     border-radius: 25px;
-    background: linear-gradient(90deg, var(--primary-red), var(--primary-blue));
-    color: white !important;
+    background: transparent;
+    color: var(--text-dark) !important;
     border: 2px solid transparent;
     position: relative;
     overflow: visible;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2), 0 2px 6px rgba(37, 99, 235, 0.2);
 }
 
 .nav-link-contact::before {
@@ -172,7 +171,7 @@ body {
     inset: 0;
     border-radius: 25px;
     padding: 2px;
-    background: linear-gradient(90deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -183,10 +182,7 @@ body {
 
 .nav-link-contact:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4), 
-                0 6px 15px rgba(37, 99, 235, 0.4),
-                0 0 30px rgba(220, 38, 38, 0.3);
-    background: linear-gradient(90deg, var(--secondary-red), var(--secondary-blue));
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2), 0 2px 6px rgba(37, 99, 235, 0.2);
 }
 
 .nav-link-contact:active {
@@ -214,7 +210,7 @@ body {
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     border-top: 3px solid transparent;
     background-image: linear-gradient(rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.98)),
-                      linear-gradient(90deg, var(--primary-red), var(--primary-blue));
+                      linear-gradient(90deg, var(--primary-blue), var(--primary-red));
     background-origin: border-box;
     background-clip: padding-box, border-box;
     transform-origin: top;
@@ -247,7 +243,7 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -312,7 +308,7 @@ body {
     top: 0;
     bottom: 0;
     width: 4px;
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     transform: scaleY(0);
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     border-radius: 0 2px 2px 0;
@@ -552,35 +548,29 @@ body {
 }
 
 .cable-line {
-    height: 4px;
     width: 0;
     border-radius: 3px;
     position: relative;
     transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    margin: 0 auto;
     opacity: 0;
-}
-
-.section-title.animate-cables .cable-line {
-    width: 100%;
-    max-width: 100%;
-    opacity: 1;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 /* Cable lines animation when in viewport */
 .section-title.animate-cables .cable-line {
-    width: 100%;
-    max-width: 100%;
     opacity: 1;
-    animation: cableLineDraw 1.5s ease-out forwards;
-}
-
-.section-title.animate-cables .cable-red {
-    animation-delay: 0.6s;
+    transform: translateX(-50%);
 }
 
 .section-title.animate-cables .cable-blue {
+    animation: cableLineDrawBlue 1.5s ease-out forwards;
     animation-delay: 0.3s;
+}
+
+.section-title.animate-cables .cable-red {
+    animation: cableLineDrawRed 1.5s ease-out forwards;
+    animation-delay: 0.6s;
 }
 
 /* Reset cable lines when leaving viewport */
@@ -589,41 +579,57 @@ body {
     opacity: 0;
     animation: none;
     animation-delay: 0s;
+    transform: translateX(-50%);
 }
 
-/* Cable line drawing animation */
-@keyframes cableLineDraw {
+/* Cable line drawing animation - blue (longer) */
+@keyframes cableLineDrawBlue {
     0% {
         width: 0;
         opacity: 0;
+        transform: translateX(-50%);
     }
     50% {
         opacity: 1;
+        transform: translateX(-50%);
     }
     100% {
-        width: 100%;
+        width: 120%;
         opacity: 1;
+        transform: translateX(-50%);
+    }
+}
+
+/* Cable line drawing animation - red (shorter) */
+@keyframes cableLineDrawRed {
+    0% {
+        width: 0;
+        opacity: 0;
+        transform: translateX(-50%);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-50%);
+    }
+    100% {
+        width: 85%;
+        opacity: 1;
+        transform: translateX(-50%);
     }
 }
 
 .cable-red {
     background: var(--primary-red);
     box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
+    height: 4px;
 }
 
 .cable-blue {
     background: var(--primary-blue);
     box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
+    height: 4px;
 }
 
-/* Cable line animation delay */
-.section-title.animate-cables .cable-red {
-    transition-delay: 0.6s;
-}
-
-.section-title.animate-cables .cable-blue {
-    transition-delay: 0.3s;
-}
 
 /* No segments effect - solid lines */
 
@@ -635,20 +641,19 @@ body {
         width: 150px;
     }
     
-    .cable-line {
-        height: 3px;
-    }
-    
-    .section-title.animate-cables .cable-line {
-        animation: cableLineDraw 1.2s ease-out forwards;
-    }
-    
-    .section-title.animate-cables .cable-red {
-        animation-delay: 0.6s;
+    .cable-blue,
+    .cable-red {
+        height: 4px;
     }
     
     .section-title.animate-cables .cable-blue {
+        animation: cableLineDrawBlue 1.2s ease-out forwards;
         animation-delay: 0.3s;
+    }
+    
+    .section-title.animate-cables .cable-red {
+        animation: cableLineDrawRed 1.2s ease-out forwards;
+        animation-delay: 0.6s;
     }
     
     .section-title:not(.animate-cables) .cable-line {
@@ -656,6 +661,7 @@ body {
         opacity: 0;
         animation: none;
         animation-delay: 0s;
+        transform: translateX(-50%);
     }
 }
 
@@ -666,20 +672,19 @@ body {
         width: 120px;
     }
     
-    .cable-line {
-        height: 2.5px;
-    }
-    
-    .section-title.animate-cables .cable-line {
-        animation: cableLineDraw 1s ease-out forwards;
-    }
-    
-    .section-title.animate-cables .cable-red {
-        animation-delay: 0.6s;
+    .cable-blue,
+    .cable-red {
+        height: 4px;
     }
     
     .section-title.animate-cables .cable-blue {
+        animation: cableLineDrawBlue 1s ease-out forwards;
         animation-delay: 0.3s;
+    }
+    
+    .section-title.animate-cables .cable-red {
+        animation: cableLineDrawRed 1s ease-out forwards;
+        animation-delay: 0.6s;
     }
     
     .section-title:not(.animate-cables) .cable-line {
@@ -687,6 +692,7 @@ body {
         opacity: 0;
         animation: none;
         animation-delay: 0s;
+        transform: translateX(-50%);
     }
 }
 
@@ -745,7 +751,7 @@ body {
     position: absolute;
     inset: -3px;
     border-radius: 18px;
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -813,7 +819,7 @@ body {
 .service-placeholder {
     width: 80px;
     height: 80px;
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -853,7 +859,7 @@ body {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--primary-red), var(--primary-blue), transparent);
+    background: linear-gradient(90deg, transparent, var(--primary-blue), var(--primary-red), transparent);
 }
 
 .about-content {
@@ -895,7 +901,7 @@ body {
 .stat-number {
     font-size: 2.2rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -970,7 +976,7 @@ body {
 .feature-icon {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     color: white;
     border-radius: 50%;
     display: flex;
@@ -1041,7 +1047,7 @@ body {
     right: 0;
     bottom: 0;
     border-radius: 18px;
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     opacity: 0;
     transition: opacity 0.4s ease;
     z-index: 0;
@@ -1184,7 +1190,7 @@ body {
 }
 
 .category-filter-btn.active {
-    background: linear-gradient(90deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
     color: white;
     border-color: transparent;
     box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
@@ -1259,7 +1265,7 @@ body {
     font-weight: 700;
     margin-bottom: 0.5rem;
     color: var(--text-dark);
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1294,7 +1300,7 @@ body {
 }
 
 .gallery-nav:hover {
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     color: white;
     transform: translateY(-50%) scale(1.1);
     box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3), 0 4px 15px rgba(37, 99, 235, 0.3);
@@ -1349,7 +1355,7 @@ body {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
@@ -1501,7 +1507,7 @@ body {
 }
 
 .lightbox-close:hover {
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     color: white;
     transform: scale(1.1) rotate(90deg);
     box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4), 0 4px 15px rgba(37, 99, 235, 0.4);
@@ -1539,7 +1545,7 @@ body {
 }
 
 .lightbox-nav:hover {
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     color: white;
     transform: translateY(-50%) scale(1.15);
     box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4), 0 6px 20px rgba(37, 99, 235, 0.4);
@@ -1652,7 +1658,7 @@ body {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--primary-red), var(--primary-blue), transparent);
+    background: linear-gradient(90deg, transparent, var(--primary-blue), var(--primary-red), transparent);
 }
 
 .contact-intro {
@@ -1767,7 +1773,7 @@ body {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
 }
 
 .footer-content {
@@ -1927,7 +1933,7 @@ body {
     align-items: center;
     padding: 1.5rem;
     border-bottom: 1px solid var(--border-light);
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     color: white;
 }
 
@@ -2013,7 +2019,7 @@ body {
     top: 0;
     bottom: 0;
     width: 4px;
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     transform: scaleY(0);
     transition: transform 0.3s ease;
 }
@@ -2444,12 +2450,12 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, var(--primary-red), var(--primary-blue));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-red));
     border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, var(--secondary-red), var(--secondary-blue));
+    background: linear-gradient(135deg, var(--secondary-blue), var(--secondary-red));
 }
 
 /* Loading Animation */
@@ -2534,7 +2540,7 @@ html {
 
 /* Elektro-spezifische Hover-Effekte */
 .service-card:hover::before {
-    background: linear-gradient(90deg, var(--secondary-red), var(--secondary-blue));
+    background: linear-gradient(90deg, var(--secondary-blue), var(--secondary-red));
 }
 
 /* Glow-Effekt für moderne Elektro-Ästhetik */
