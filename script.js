@@ -300,6 +300,32 @@ const servicesSectionObserver = new IntersectionObserver(function(entries) {
     });
 }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
+// Promise features observer for staggered animation
+let promiseFeaturesAnimated = false;
+const promiseSectionObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(entry => {
+        if (entry.isIntersecting && !promiseFeaturesAnimated) {
+            promiseFeaturesAnimated = true;
+            const featureItems = entry.target.querySelectorAll('.feature-item');
+            const isDesktop = window.innerWidth > 768;
+            
+            // Animate each feature with staggered delay
+            featureItems.forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.opacity = '1';
+                    if (isDesktop) {
+                        item.style.transform = 'translateY(0) scale(1)';
+                    } else {
+                        item.style.transform = 'translateY(0) scale(1)';
+                    }
+                }, index * (isDesktop ? 120 : 80)); // Stagger delay: 120ms desktop, 80ms mobile
+            });
+            
+            promiseSectionObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
 // Observe elements for animation
 document.addEventListener('DOMContentLoaded', function() {
     // Service cards - staggered fade up animation
@@ -358,15 +384,35 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Feature items - staggered fade up
-    const featureItems = document.querySelectorAll('.feature-item');
-    featureItems.forEach((el, index) => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
-        el.style.transitionDelay = `${index * 0.1}s`;
-        observer.observe(el);
-    });
+    // Promise section features - staggered fade up animation
+    const promiseSection = document.querySelector('.promise');
+    const promiseFeaturesGrid = promiseSection ? promiseSection.querySelector('.promise-features') : null;
+    
+    if (promiseFeaturesGrid) {
+        const featureItems = promiseFeaturesGrid.querySelectorAll('.feature-item');
+        const isDesktop = window.innerWidth > 768;
+        
+        // Initialize feature items as hidden
+        featureItems.forEach((el) => {
+            el.style.opacity = '0';
+            el.style.transition = isDesktop 
+                ? 'opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1)'
+                : 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            
+            if (isDesktop) {
+                // Desktop: Start from below with scale
+                el.style.transform = 'translateY(40px) scale(0.95)';
+            } else {
+                // Mobile: Start from below with smaller scale
+                el.style.transform = 'translateY(30px) scale(0.95)';
+            }
+        });
+        
+        // Observe promise section to trigger animation
+        if (promiseSection) {
+            promiseSectionObserver.observe(promiseSection);
+        }
+    }
 
     // Stat items - scale up with stagger
     const statItems = document.querySelectorAll('.stat-item');

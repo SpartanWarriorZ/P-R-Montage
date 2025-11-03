@@ -2495,9 +2495,6 @@ html {
     }
 }
 
-.feature-item {
-    animation: fadeInUp 0.6s ease forwards;
-}
 
 /* Elektro-spezifische Animationen */
 .hero-logo {
